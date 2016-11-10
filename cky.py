@@ -1,3 +1,5 @@
+import numpy as np
+
 n = 7
 
 class nonterminal_rule:
@@ -19,10 +21,11 @@ def search_terminal(word):
         if rule.child == word: rulenum.append(i)
     return rulenum
 
-def search_nonterminal(parent, left_child, bottom_child):
+def search_nonterminal(lc, bc):
     rulenum = []
     for i,rule in enumerate(nonterm_rules):
-        if rule.child == [left_child, bottom_child]:
+        print rule.child[0], table[lc[0]][lc[1]]
+        if rule.child[0] in table[lc[0]][lc[1]] and rule.child[1] in table[bc[0]][bc[1]]:
             rulenum.append(i)
     return rulenum
 
@@ -42,18 +45,22 @@ string = 'I see'
 words = string.split()
 words_num = len(words)
 
+table = [[[] for j in range(words_num)] for i in range(words_num)]
+
 for i, word in enumerate(words): #search for nonterminal rule corresponding to (i,i) in the table
     #Is there any rules that generate word? (the i-th word in sentence)
     match = search_terminal(word)
-    for j in match:
-        print term_rules[j].parent
+    for m in match:
+        table[i][i].append(term_rules[m].parent)
 
 for d in range(words_num):
     for i in range(words_num - d):
         j = i + d
         for k in range(i,j):
-            print i,j, "from", i, k, ",", k+1,j
-            print search_nonterminal([i,j], [i,k], [k+1,j])
+            match =  search_nonterminal([i,k], [k+1,j])
+            for m in match:
+                table[i][j].append(nonterm_rules[m].parent)
             #must give the cell (i,k) and (k+1,j) in the table.
 
 print words
+print table
